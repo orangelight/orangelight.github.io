@@ -21,7 +21,7 @@
 
 // set the dimensions and margins of the graph
 var margin = {top: 10, right: 30, bottom: 30, left: 60},
-    width = window.innerHeight - margin.left - margin.right,
+    width = window.innerWidth - margin.left - margin.right-60,
     height = window.innerHeight - margin.top - margin.bottom-60;
 
 // append the svg object to the body of the page
@@ -61,7 +61,22 @@ d3.csv("https://gist.githubusercontent.com/orangelight/feb9033ab354147b1f1ecf572
     	.append('option')
       .text(function (d) { return d; }) // text showed in the menu
       .attr("value", function (d) { return d; }) // corresponding value returned by the button
-      .attr("class", function (d) {  return "teamopt opt" + d } )
+      .attr("class", function (d) {  return "teamopt opt" + d } );
+
+      svg.append("text")
+    .attr("class", "x label")
+    .attr("text-anchor", "end")
+    .attr("x", width)
+    .attr("y", height - 6)
+    .text("Match Number");
+
+    svg.append("text")
+    .attr("class", "y label")
+    .attr("text-anchor", "end")
+    .attr("y", 6)
+    .attr("dy", ".75em")
+    .attr("transform", "rotate(-90)")
+    .text("Net Wins");
     $(document).ready(function() {
         $('#team-select').select2();
         $('#team-select').val(['frc548', 'frc503', 'frc573']).change();
@@ -103,6 +118,35 @@ d3.selectAll(".line")
  }
 }
 
+var tooltip = d3.select("#my_dataviz")
+    .append("div")
+    .style("opacity", 0)
+    .style("position", "absolute")
+    .attr("class", "tooltip")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "1px")
+    .style("border-radius", "5px")
+    .style("padding", "10px")
+var mouseover = function(d) {
+    tooltip
+      .style("opacity", 1)
+  }
+
+  var mousemove = function(d) {
+    tooltip
+      .html(d.key)
+      .style("left", (d3.event.pageX+10) + "px")
+      .style("top", (d3.event.pageY) + "px");
+  }
+
+  // A function that change this tooltip when the leaves a point: just need to set opacity to 0 again
+  var mouseleave = function(d) {
+    tooltip
+      .transition()
+      .duration(200)
+      .style("opacity", 0)
+  }
 
   svg.append("g").selectAll(".line")
       .data(sumstat)
@@ -118,7 +162,9 @@ d3.selectAll(".line")
             .x(function(d) { return x(d.match_num); })
             .y(function(d) { return y(+d.net_wins); })
             (d.values)
-        });     
+        }).on("mouseover", mouseover )
+    .on("mousemove", mousemove )
+    .on("mouseleave", mouseleave );     
 })
 
 </script>
