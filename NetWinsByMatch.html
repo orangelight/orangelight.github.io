@@ -34,17 +34,14 @@ var svg = d3.select("#my_dataviz")
           "translate(" + margin.left + "," + margin.top + ")");
 
 //Read the data
-// "https://gist.githubusercontent.com/orangelight/747a75b6f8d0a729136342bc2cb7e306/raw/b93f59072974da64fc530f40fa3e9fd6162df5e3/smallnetwins.csv"
-// big "https://gist.githubusercontent.com/orangelight/110cb5437062ef0a2fc670a5ec7476fb/raw/df1787cc6e7894122e90a58ee716ba78573db88a/netwins.csv"
-// Big opt "https://gist.githubusercontent.com/orangelight/feb9033ab354147b1f1ecf572d808c29/raw/f1a0fc2a6b861b7ecd5d8f95e9a76508f358d64d/netwinsopt.csv"
 d3.csv("https://gist.githubusercontent.com/orangelight/feb9033ab354147b1f1ecf572d808c29/raw/f1a0fc2a6b861b7ecd5d8f95e9a76508f358d64d/netwinsopt.csv", function(data) {
 
-  // group the data: I want to draw one line per group
-  var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
+
+  var sumstat = d3.nest()
     .key(function(d) { return d.team;})
     .entries(data);
 
-  // Add X axis --> it is a date format
+
   var x = d3.scaleLinear()
     .domain(d3.extent(data, function(d) { return +d.match_num; }))
     .range([ 0, width ]);
@@ -56,7 +53,7 @@ d3.csv("https://gist.githubusercontent.com/orangelight/feb9033ab354147b1f1ecf572
         var yn = y.substr(3, x.length);
         return xn-yn;
     }); 
-  // add the options to the button
+
     d3.select("#team-select")
       .selectAll('myoption')
      	.data(teams)
@@ -70,7 +67,7 @@ d3.csv("https://gist.githubusercontent.com/orangelight/feb9033ab354147b1f1ecf572
         $('#team-select').val(['frc548', 'frc503', 'frc573']).change();
         $('#team-select').on('change', function (e) {
     var selected_data = $('#team-select').select2('data').map(x => x.id)
-    // console.log(selected_data);
+
     update(selected_data);
 });
 $('#team-select').val(['frc548', 'frc503', 'frc573']).change();
@@ -82,36 +79,21 @@ $('#team-select').val(['frc548', 'frc503', 'frc573']).change();
   svg.append("g")
     .call(d3.axisLeft(y));
 
-  // color palette
-/*   var res = sumstat.map(function(d){ return d.team }) // list of group names
-  var color = d3.scaleOrdinal()
-    .domain(res)
-    .range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999']) */
-
 
 function update(selectedGroups) {
    
 var colors = ['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999']
-// console.log(selectedGroup)
+
 d3.selectAll(".line")
-			//.transition()
-     // .duration(100)
-      // .transition()
-      // .duration(200)
       .attr("stroke-opacity","0.1")
       .attr("stroke-width", 1.5)
       .attr("stroke", 'black');
       var i = 0;
       for (var selectedGroup of selectedGroups) {
-      // console.log(selectedGroup);
       d3.selectAll("."+selectedGroup)
-             //.transition()
-            //.duration(100)
             .attr("stroke-opacity","0.75")
             .attr("stroke-width", 2.5)
-            // .moveToFront()
             .attr("stroke", colors[i%colors.length]);
-            //.attr("r", 3)
        d3.selectAll("."+selectedGroup).raise();
        var opt = document.getElementById('optiondiv').querySelector(`[title='${selectedGroup}']`);
        if (opt !== null) {
@@ -122,13 +104,11 @@ d3.selectAll(".line")
 }
 
 
-  // Draw the line
   svg.append("g").selectAll(".line")
       .data(sumstat)
       .enter()
       .append("path")
         .attr("fill", "none")
-        // .attr("stroke", function(d){ return color(d.team) })
         .attr("stroke", 'black')
         .attr("stroke-opacity","0.1")
         .attr("stroke-width", 1.5)
@@ -138,10 +118,7 @@ d3.selectAll(".line")
             .x(function(d) { return x(d.match_num); })
             .y(function(d) { return y(+d.net_wins); })
             (d.values)
-        });
-        
-        //
-        
+        });     
 })
 
 </script>
