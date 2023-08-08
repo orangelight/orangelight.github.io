@@ -110,7 +110,7 @@ function update(selectedGroups) {
 var colors = ['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999']
 
 d3.selectAll(".line")
-      .attr("stroke-opacity", (document.querySelector('#showall').checked) ? "0.1" : "0")
+      .attr("stroke-opacity", (document.querySelector('#showall').checked) ? "0.05" : "0")
       .attr("stroke-width", 1.5)
       .attr("stroke", 'black');
       var i = 0;
@@ -157,6 +157,14 @@ var mouseover = function(d) {
       .duration(200)
       .style("opacity", 0)
   }
+  svg.append('line')
+   .attr("x1", 0)
+   .attr("y1", y(0))
+   .attr("x2", width)
+   .attr("y2", y(0))
+   .attr("stroke-width", 2)
+   .attr("stroke", "black")
+   .attr("stroke-dasharray", "4");
 
   svg.append("g").selectAll(".line")
       .data(sumstat)
@@ -164,7 +172,7 @@ var mouseover = function(d) {
       .append("path")
         .attr("fill", "none")
         .attr("stroke", 'black')
-        .attr("stroke-opacity","0.1")
+        .attr("stroke-opacity","0.05")
         .attr("stroke-width", 1.5)
         .attr("class", function (d) {  return "line " + d.key } )
         .attr("d", function(d){
