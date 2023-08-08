@@ -99,34 +99,14 @@ document.querySelector('#showall').addEventListener('change', (event) => {
     });
   // Add Y axis
   var y = d3.scaleLinear()
-    .domain([d3.min(data, function(d) { return +d.net_wins; })-30, d3.max(data, function(d) { return +d.net_wins; })])
+    .domain([d3.min(data, function(d) { return +d.net_wins; })-10, d3.max(data, function(d) { return +d.net_wins; })])
     .range([ height, 0 ]);
-  svg.append("g")
-    .call(d3.axisLeft(y));
+  var yAxis = d3.axisLeft().scale(y);
+    svg.append("g")
+    .attr("class","myYaxis");
+  //svg.selectAll(".myYaxis")
+    //.call(yAxis);
 
-
-function update(selectedGroups) {
-   
-var colors = ['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999']
-
-d3.selectAll(".line")
-      .attr("stroke-opacity", (document.querySelector('#showall').checked) ? "0.05" : "0")
-      .attr("stroke-width", 1.5)
-      .attr("stroke", 'black');
-      var i = 0;
-      for (var selectedGroup of selectedGroups) {
-      d3.selectAll("."+selectedGroup)
-            .attr("stroke-opacity","0.75")
-            .attr("stroke-width", 2.5)
-            .attr("stroke", colors[i%colors.length]);
-       d3.selectAll("."+selectedGroup).raise();
-       var opt = document.getElementById('optiondiv').querySelector(`[title='${selectedGroup}']`);
-       if (opt !== null) {
-        opt.style.backgroundColor = colors[i%colors.length];
-       }
-       i+=1;
- }
-}
 
 var tooltip = d3.select("#my_dataviz")
     .append("div")
@@ -157,7 +137,7 @@ var mouseover = function(d) {
       .duration(200)
       .style("opacity", 0)
   }
-  svg.append('line')
+  var middleLine = svg.append('line')
    .attr("x1", 0)
    .attr("y1", y(0))
    .attr("x2", width)
@@ -166,10 +146,13 @@ var mouseover = function(d) {
    .attr("stroke", "black")
    .attr("stroke-dasharray", "4");
 
-  svg.append("g").selectAll(".line")
+   var line = svg.append('g')
+      .selectAll(".line")
       .data(sumstat)
       .enter()
-      .append("path")
+      
+      .append('path')
+      //
         .attr("fill", "none")
         .attr("stroke", 'black')
         .attr("stroke-opacity","0.05")
@@ -182,7 +165,69 @@ var mouseover = function(d) {
             (d.values)
         }).on("mouseover", mouseover )
     .on("mousemove", mousemove )
-    .on("mouseleave", mouseleave );     
+    .on("mouseleave", mouseleave );  
+    
+    
+function update(selectedGroups) {
+   
+   var colors = ['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999']
+    if (!document.querySelector('#showall').checked && selectedGroups.length > 0) {
+     var sgset = new Set(selectedGroups);
+     var fdata = data.filter(function(d) {return sgset.has(d.team)});
+     y.domain([d3.min(fdata, function(d) { return +d.net_wins; })-5, d3.max(fdata, function(d) { return +d.net_wins; })])
+     svg.selectAll(".myYaxis")
+       .transition()
+       .duration(1000)
+       .call(yAxis);
+    }
+    else {
+     y.domain([d3.min(data, function(d) { return +d.net_wins; })-5, d3.max(data, function(d) { return +d.net_wins; })])
+     svg.selectAll(".myYaxis").call(yAxis);
+    }
+    line
+
+         //.enter()
+         // .append("path")
+           .attr("stroke-opacity", (document.querySelector('#showall').checked) ? "0.05" : "0")
+           .attr("fill", "none")
+           .attr("stroke", 'black')
+           // .attr("stroke-opacity","0.05")
+           .attr("stroke-width", 1.5)
+           .attr("class", function (d) {  return "line " + d.key } )
+           //.merge(u)
+           .attr("d", function(d){
+             return d3.line()
+               .x(function(d) { return x(d.match_num); })
+               .y(function(d) { return y(+d.net_wins); })
+               (d.values)
+           }).on("mouseover", mouseover )
+       .on("mousemove", mousemove )
+       .on("mouseleave", mouseleave );     
+       middleLine
+   .attr("x1", 0)
+   .attr("y1", y(0))
+   .attr("x2", width)
+   .attr("y2", y(0))
+   .attr("stroke-width", 2)
+   .attr("stroke", "black")
+   .attr("stroke-dasharray", "4")
+   .attr("stroke-opacity", (document.querySelector('#showall').checked) ? "0" : "1");
+         var i = 0;
+         for (var selectedGroup of selectedGroups) {
+         d3.selectAll("."+selectedGroup)
+               .attr("stroke-opacity","0.75")
+               .attr("stroke-width", 2.5)
+               .attr("stroke", colors[i%colors.length]);
+          d3.selectAll("."+selectedGroup).raise();
+          var opt = document.getElementById('optiondiv').querySelector(`[title='${selectedGroup}']`);
+          if (opt !== null) {
+           opt.style.backgroundColor = colors[i%colors.length];
+          }
+          i+=1;
+    }
+   
+   }
+   
 })
 
 </script>
