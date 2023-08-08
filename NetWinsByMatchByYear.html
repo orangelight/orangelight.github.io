@@ -9,9 +9,13 @@
 <script src="https://d3js.org/d3.v4.js"></script>
     </head>
 
-<div width="100%" id="optiondiv"><select id="team-select" multiple="multiple" name="state" style="width: 100%"></select></div>
+<div width="100%" id="optiondiv" style="display: flex">
+  <select id="team-select" multiple="multiple" name="state"
+    style="flex-grow: 1;"></select>
+    <input type="checkbox"  style="width: 20px;height: 15px;margin-top: 3px;" id="showall" value="Show All" checked>Show All</input>
 
 </select>
+</div>
 
 
 <div id="my_dataviz"></div>
@@ -87,6 +91,11 @@ d3.csv("https://gist.githubusercontent.com/orangelight/d06483dd80942b38a43ef6c29
     update(selected_data);
 });
 $('#team-select').val(['frc548', 'frc503', 'frc573']).change();
+document.querySelector('#showall').addEventListener('change', (event) => {
+        var selected_data = $('#team-select').select2('data').map(x => x.id);
+
+        update(selected_data);
+      });
     });
   // Add Y axis
   var y = d3.scaleLinear()
@@ -101,7 +110,7 @@ function update(selectedGroups) {
 var colors = ['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999']
 
 d3.selectAll(".line")
-      .attr("stroke-opacity","0.1")
+      .attr("stroke-opacity", (document.querySelector('#showall').checked) ? "0.1" : "0")
       .attr("stroke-width", 1.5)
       .attr("stroke", 'black');
       var i = 0;
