@@ -1,0 +1,172 @@
+
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8"></meta>
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://d3js.org/d3.v4.js"></script>
+    </head>
+
+<div width="100%" id="optiondiv"><select id="team-select" multiple="multiple" name="state" style="width: 100%"></select></div>
+
+</select>
+
+
+<div id="my_dataviz"></div>
+<script>
+// .select2-selection__choice,[title='frc7']
+
+
+// set the dimensions and margins of the graph
+var margin = {top: 10, right: 30, bottom: 30, left: 60},
+    width = window.innerWidth - margin.left - margin.right-60,
+    height = window.innerHeight - margin.top - margin.bottom-60;
+
+// append the svg object to the body of the page
+var svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+//Read the data
+// "https://gist.githubusercontent.com/orangelight/feb9033ab354147b1f1ecf572d808c29/raw/f1a0fc2a6b861b7ecd5d8f95e9a76508f358d64d/netwinsopt.csv"
+d3.csv("https://gist.githubusercontent.com/orangelight/d06483dd80942b38a43ef6c295f21d1d/raw/469d743e754cd6bc7334936648593bf31bfda2c9/netwins2002yearscalesmall.csv", function(data) {
+
+
+  var sumstat = d3.nest()
+    .key(function(d) { return d.team;})
+    .entries(data);
+
+
+  var x = d3.scaleLinear()
+    .domain(d3.extent(data, function(d) { return +d.match_num; }))
+    .range([ 0, width ]);
+  svg.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x).ticks(22).tickFormat(d3.format("d")));
+	var teams = [...new Set(data.map(d => d.team))].sort(function(x, y) {
+        var xn = x.substr(3, x.length);
+        var yn = y.substr(3, x.length);
+        return xn-yn;
+    }); 
+
+    d3.select("#team-select")
+      .selectAll('myoption')
+     	.data(teams)
+      .enter()
+    	.append('option')
+      .text(function (d) { return d; }) // text showed in the menu
+      .attr("value", function (d) { return d; }) // corresponding value returned by the button
+      .attr("class", function (d) {  return "teamopt opt" + d } );
+
+      svg.append("text")
+    .attr("class", "x label")
+    .attr("text-anchor", "end")
+    .attr("x", width)
+    .attr("y", height - 6)
+    .text("Year");
+
+    svg.append("text")
+    .attr("class", "y label")
+    .attr("text-anchor", "end")
+    .attr("y", 6)
+    .attr("dy", ".75em")
+    .attr("transform", "rotate(-90)")
+    .text("Net Wins");
+    $(document).ready(function() {
+        $('#team-select').select2();
+        $('#team-select').val(['frc548', 'frc503', 'frc573']).change();
+        $('#team-select').on('change', function (e) {
+    var selected_data = $('#team-select').select2('data').map(x => x.id)
+
+    update(selected_data);
+});
+$('#team-select').val(['frc548', 'frc503', 'frc573']).change();
+    });
+  // Add Y axis
+  var y = d3.scaleLinear()
+    .domain([d3.min(data, function(d) { return +d.net_wins; })-30, d3.max(data, function(d) { return +d.net_wins; })])
+    .range([ height, 0 ]);
+  svg.append("g")
+    .call(d3.axisLeft(y));
+
+
+function update(selectedGroups) {
+   
+var colors = ['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999']
+
+d3.selectAll(".line")
+      .attr("stroke-opacity","0.1")
+      .attr("stroke-width", 1.5)
+      .attr("stroke", 'black');
+      var i = 0;
+      for (var selectedGroup of selectedGroups) {
+      d3.selectAll("."+selectedGroup)
+            .attr("stroke-opacity","0.75")
+            .attr("stroke-width", 2.5)
+            .attr("stroke", colors[i%colors.length]);
+       d3.selectAll("."+selectedGroup).raise();
+       var opt = document.getElementById('optiondiv').querySelector(`[title='${selectedGroup}']`);
+       if (opt !== null) {
+        opt.style.backgroundColor = colors[i%colors.length];
+       }
+       i+=1;
+ }
+}
+
+var tooltip = d3.select("#my_dataviz")
+    .append("div")
+    .style("opacity", 0)
+    .style("position", "absolute")
+    .attr("class", "tooltip")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "1px")
+    .style("border-radius", "5px")
+    .style("padding", "10px")
+var mouseover = function(d) {
+    tooltip
+      .style("opacity", 1)
+  }
+
+  var mousemove = function(d) {
+    tooltip
+      .html(d.key)
+      .style("left", (d3.event.pageX+10) + "px")
+      .style("top", (d3.event.pageY) + "px");
+  }
+
+  // A function that change this tooltip when the leaves a point: just need to set opacity to 0 again
+  var mouseleave = function(d) {
+    tooltip
+      .transition()
+      .duration(200)
+      .style("opacity", 0)
+  }
+
+  svg.append("g").selectAll(".line")
+      .data(sumstat)
+      .enter()
+      .append("path")
+        .attr("fill", "none")
+        .attr("stroke", 'black')
+        .attr("stroke-opacity","0.1")
+        .attr("stroke-width", 1.5)
+        .attr("class", function (d) {  return "line " + d.key } )
+        .attr("d", function(d){
+          return d3.line()
+            .x(function(d) { return x(d.match_num); })
+            .y(function(d) { return y(+d.net_wins); })
+            (d.values)
+        }).on("mouseover", mouseover )
+    .on("mousemove", mousemove )
+    .on("mouseleave", mouseleave );     
+})
+
+</script>
+</html>
