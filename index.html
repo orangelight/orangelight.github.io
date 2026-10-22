@@ -2,30 +2,42 @@
 <html>
   <style>
   .logo {
+    --accent: #ff6000;
     width: 10%;
     min-width: 70px;
     max-width: 140px;
     display: block;
     margin: 0 auto;
-    transition: transform 0.8s, color 0.8s;
+    transition: transform 0.8s, color 0.8s, --accent 0.8s;
     animation: spin 0.8s, fade-to-black 0.8s;
     color: #000000;
   }
+ .logo .accent {
+  fill: var(--accent);
+ }
   .logo:hover {
     transform: rotate(180deg);
-    color: #ff8c00;
+    color: #ff6000;
+    --accent: #000;
   }
    .logo:active {
     transform: rotate(360deg);
     color: #ff0000;
+    --accent: #ff0000;
   }
   @keyframes spin {
     from { transform: rotate(-180deg); }
     to   { transform: rotate(0deg); }
   }
-  @keyframes fade-to-black {
-  from { color: lightgray; }  /* pick your starting color */
-  to   { color: #000; }
+ @keyframes fade-to-black {
+  from { color: lightgray; --accent: #ffc29d; }
+  to   { color: #000;      --accent: #ff6000; }
+}
+
+@property --accent {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #ff6000;
 }
 </style>
   <head>
@@ -43,8 +55,8 @@
       </defs>
       <use href="#a"/>
       <use href="#a" transform="rotate(45 500 500)"/>
-      <use href="#a" transform="rotate(90 500 500)"/>
-      <use href="#a" transform="rotate(135 500 500)"/>
+      <use href="#a"  transform="rotate(90 500 500)"/>
+      <use href="#a" class="accent" transform="rotate(135 500 500)"/>
       <use href="#a" transform="rotate(180 500 500)"/>
       <use href="#a" transform="rotate(225 500 500)"/>
       <use href="#a" transform="rotate(270 500 500)"/>
