@@ -52,7 +52,7 @@
     }
     const randomColor = () =>
       // `hsl(${Math.floor(Math.random() * 360)} ${Math.floor(getRandomIntInclusive(100, 100))}% ${Math.floor(getRandomIntInclusive(20, 60))}%)`;
-      `hsl(${Math.floor(getRandomIntInclusive(0, 45))} ${Math.floor(getRandomIntInclusive(100, 100))}% ${Math.floor(getRandomIntInclusive(0, 60))}%)`;
+      `hsl(${Math.floor(getRandomIntInclusive(0, 40))} ${Math.floor(getRandomIntInclusive(100, 100))}% ${Math.floor(getRandomIntInclusive(15, 60))}%)`;
     const grid = document.getElementById('grid');
 
     const SIZES = ['aaa', 'aa', 'a', 'b', 'c'];
@@ -63,7 +63,7 @@
       svg.setAttribute('viewBox', '0 0 1000 1000');
       svg.setAttribute('role', 'img');
       svg.setAttribute('aria-label', 'Logo');
-      const blades = getRandomIntInclusive(8, 8);
+      const blades = getRandomIntInclusive(6, 10);
       const color = randomColor();
       for (let j = 0; j < blades; j++) {
         const use = document.createElementNS(NS, 'use');
