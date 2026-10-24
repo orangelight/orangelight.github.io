@@ -55,19 +55,19 @@
       `hsl(${Math.floor(getRandomIntInclusive(0, 40))} ${Math.floor(getRandomIntInclusive(100, 100))}% ${Math.floor(getRandomIntInclusive(15, 60))}%)`;
     const grid = document.getElementById('grid');
 
-    const SIZES = ['aaa', 'aa', 'a', 'b', 'c'];
-    const randomSize = () => SIZES[Math.floor(Math.random() * SIZES.length)];
+    const SIZES = ['c', 'b', 'a', 'aa', 'aaa'];
+    const randomSize = (b) =>  SIZES[Math.floor(Math.random() * (b < 11 ? SIZES.length : (b < 13 ? 4 : (b < 16 ? 3 : (b < 21 ? 2 : 1)))))];
 
     for (let i = 0; i < COUNT; i++) {
       const svg = document.createElementNS(NS, 'svg');
       svg.setAttribute('viewBox', '0 0 1000 1000');
       svg.setAttribute('role', 'img');
       svg.setAttribute('aria-label', 'Logo');
-      const blades = getRandomIntInclusive(6, 10);
+      const blades = getRandomIntInclusive(5, 19);
       const color = randomColor();
       for (let j = 0; j < blades; j++) {
         const use = document.createElementNS(NS, 'use');
-        use.setAttribute('href', `#${randomSize()}`);
+        use.setAttribute('href', `#${randomSize(blades)}`);
         use.setAttribute('fill', color);
         use.setAttribute('transform', `rotate(${j * 360 / blades} 500 500)`);
         svg.appendChild(use);
