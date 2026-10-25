@@ -4,6 +4,7 @@
   .logo {
     --dur: 0.12s;
     --step: 0.06s;
+    --wait: 0.33s;
     width: 15%;
     min-width: 80px;
     max-width: 140px;
@@ -16,7 +17,7 @@
     transition: fill var(--dur) ease-out;
     transition-delay: calc(var(--i) * var(--step));
     animation: fade-in-color var(--dur) ease-out backwards;
-    animation-delay: calc(var(--i) * var(--step));
+    animation-delay: calc(var(--wait) + var(--i) * var(--step));
   }
   .logo:hover use {
     fill: #ff6000;
@@ -25,7 +26,7 @@
     fill: #eee;
   }
   @keyframes fade-in-color {
-    from { fill: #eee; } 
+    from { fill: #eeeeee; } 
   }
   .grid {
       display: grid;
