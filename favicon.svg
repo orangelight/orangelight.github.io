@@ -5,7 +5,7 @@
   <use href="#a"/>
   <use href="#a" transform="rotate(45 500 500)"/>
   <use href="#a" transform="rotate(90 500 500)"/>
-  <use href="#a" fill="black" transform="rotate(135 500 500)"/>
+  <use href="#a" transform="rotate(135 500 500)"/>
   <use href="#a" transform="rotate(180 500 500)"/>
   <use href="#a" transform="rotate(225 500 500)"/>
   <use href="#a" transform="rotate(270 500 500)"/>
