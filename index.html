@@ -1,33 +1,32 @@
 <!DOCTYPE html>
 <html>
   <style>
-  .logo {
-    --dur: 0.12s;
-    --step: 0.06s;
-    --wait: 0.33s;
-    width: 15%;
-    min-width: 80px;
-    max-width: 140px;
-    display: block;
-    margin: 0 auto;
-    color: #000;
-  }
-  .logo use {
-    fill: currentColor;
-    transition: fill var(--dur) ease-out;
-    transition-delay: calc(var(--i) * var(--step));
-    animation: fade-in-color var(--dur) ease-out backwards;
-    animation-delay: calc(var(--wait) + var(--i) * var(--step));
-  }
-  .logo:hover use {
-    fill: #ff6000;
-  }
-  .logo:active use {
-    fill: #eee;
-  }
-  @keyframes fade-in-color {
-    from { fill: #eeeeee; } 
-  }
+.logo {
+  --dur: 0.5s;          /* load: one blade's fade out and back */
+  --step: 0.1s;         /* load: delay between blades */
+  --wait: 0.05s;        /* load: pause before the sweep */
+  --hover-dur: 0.12s;   /* hover: one blade's color change */
+  --hover-step: 0.06s;  /* hover: delay between blades */
+  width: 15%;
+  min-width: 80px;
+  max-width: 140px;
+  display: block;
+  margin: 0 auto;
+  color: #000;
+}
+.logo use {
+  fill: currentColor;
+  transition: fill var(--hover-dur) ease-out;
+  transition-delay: calc(var(--i) * var(--hover-step));
+  animation: flash var(--dur) ease-in-out;
+  animation-delay: calc(var(--wait) + var(--i) * var(--step));
+}
+.logo:hover use  { fill: #ff6000; }
+.logo:active use { fill: #eee; }
+
+@keyframes flash {
+  50% { fill: #ff6000; }   /* no from/to: it starts and ends at the normal fill */
+}
   .grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -43,8 +42,8 @@
   <head>
     <title>alxdn</title>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
-    <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="icon" href="favicon.png" type="image/png">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
   </head>
   
   <body style="background-color: #eee; font-family: 'Fira Code', monospace;">
